@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Complaint Dashboard</title>
+    <!-- <link rel="stylesheet" href="loginpage.css"> -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-card {
+            background: white;
+            padding: 70px 60px;
+            border-radius: 16px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 500px; /* Increased size */
+        }
+
+        .login-card h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #333;
+            font-size: 32px; /* Larger title */
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #555;
+            font-size: 16px; /* Larger label */
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 16px; /* Larger input */
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px; /* Bigger button */
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .btn:hover {
+            background: #0056b3;
+        }
+
+        .btn-gmail {
+            background: #db4437;
+            margin-top: 20px; /* Added gap above Gmail button */
+        }
+
+        .btn-gmail:hover {
+            background: #a3332a;
+        }
+
+        .text-center {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px; /* Slightly bigger text */
+        }
+
+        .text-center a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .text-center a:hover {
+            text-decoration: underline;
+        }
+
+        .sign-in-button {
+            display: inline-block;
+            padding: 15px;
+            background-color: rgb(25, 72, 212);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 10px; /* Space below Sign In button */
+        }
+
+        .sign-in-button:hover {
+            background-color: rgb(20, 60, 180);
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Added gap between buttons */
+            margin-top: 10px;
+        }
+
+        @media(max-width: 600px){
+            .login-card {
+                padding: 40px 30px;
+                max-width: 90%;
+            }
+
+            .login-card h2 {
+                font-size: 28px;
+            }
+
+            .form-group input, .btn {
+                font-size: 16px;
+            }
+        }
+    </style>
+    <script type="module" src="loginpage.js" defer></script>
+</head>
+<body>
+    <div class="login-card">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Email</label>
+                <input type="email" id="username" name="username" placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password">
+            </div>
+            
+            <div class="button-container">
+                <button type="submit" class="sign-in-button">Sign In</button>
+                <button type="button" class="btn btn-gmail" onclick="signInWithGmail()">Sign in with Gmail</button>
+            </div>
+        </form>
+        <div class="text-center">
+            <p>New user? <a href="signup.html">Create a new account</a></p>
+        </div>
+    </div>
+
+    <script type="module" src="loginpage.js"></script>
+</body>
+</html>
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Complaint Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3e5ff; /* light purple background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-card {
+            background: white;
+            padding: 70px 60px;
+            border-radius: 16px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .login-card h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #6a0dad; /* purple title */
+            font-size: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #6a0dad; /* purple label */
+            font-size: 16px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        a.signin-btn {
+            display: inline-block; 
+            padding: 15px; 
+            background-color: #6a0dad; /* purple button */
+            color: white; 
+            text-decoration: none; 
+            border-radius: 8px; 
+            font-size: 18px; 
+            font-weight: bold; 
+            text-align: center; 
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .btn-gmail {
+            width: 100%;
+            padding: 15px;
+            background: #ffffff; /* white Gmail button */
+            color: #db4437; /* Gmail red text */
+            border: 2px solid #db4437;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+<<<<<<< HEAD
+=======
+        .btn:hover {
+            background: #0056b3;
+        }
+
+        .btn-gmail {
+            background: #db4437;
+            margin-top: 20px; /* Added gap above Gmail button */
+        }
+
+>>>>>>> 7d44203 (done)
+        .btn-gmail:hover {
+            background: #db4437;
+            color: white;
+        }
+
+        .text-center {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .text-center a {
+            color: #6a0dad; /* purple link */
+            text-decoration: none;
+        }
+
+        .text-center a:hover {
+            text-decoration: underline;
+        }
+
+        .sign-in-button {
+            display: inline-block;
+            padding: 15px;
+            background-color: rgb(25, 72, 212);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 10px; /* Space below Sign In button */
+        }
+
+        .sign-in-button:hover {
+            background-color: rgb(20, 60, 180);
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Added gap between buttons */
+            margin-top: 10px;
+        }
+
+        @media(max-width: 600px){
+            .login-card {
+                padding: 40px 30px;
+                max-width: 90%;
+            }
+
+            .login-card h2 {
+                font-size: 28px;
+            }
+
+            .form-group input, .signin-btn, .btn-gmail {
+                font-size: 16px;
+            }
+        }
+    </style>
+    <script type="module" src="loginpage.js" defer></script>
+</head>
+<body>
+    <div class="login-card">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username or Email</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username or email">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password">
+            </div>
+<<<<<<< HEAD
+
+            <a href="dashboard.html" class="signin-btn">Sign In</a>
+            <button type="button" class="btn-gmail" onclick="signInWithGmail()">Sign in with Gmail</button>
+=======
+            
+            <div class="button-container">
+                <a class="sign-in-button">Sign In</a>
+                <button type="button" class="btn btn-gmail" onclick="signInWithGmail()">Sign in with Gmail</button>
+            </div>
+>>>>>>> 7d44203 (done)
+        </form>
+        <div class="text-center">
+            <p>New user? <a href="signup.html">Create a new account</a></p>
+        </div>
+    </div>
+
+    <script>
+        function signInWithGmail() {
+            alert("Redirecting to Gmail Sign In...");
+            // Placeholder for Google OAuth integration
+        }
+    </script>
+</body>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyAM7d_jAB1jwyGL9JlUmkhtH6uJybLZ8OY",
+    authDomain: "hactopus-612e9.firebaseapp.com",
+    projectId: "hactopus-612e9",
+    storageBucket: "hactopus-612e9.firebasestorage.app",
+    messagingSenderId: "1016001216075",
+    appId: "1:1016001216075:web:6234371ba8a04c96ccd7ce",
+    measurementId: "G-Z5QCR2ZJNT"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+</html> -->
