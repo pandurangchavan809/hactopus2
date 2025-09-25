@@ -6,10 +6,9 @@ import os
 DATABASE = os.path.join(os.path.dirname(__file__), '..', 'complaints.db')
 
 def init_db():
-    if not os.path.exists(DATABASE):
-        with sqlite3.connect(DATABASE) as conn:
-            with open(os.path.join(os.path.dirname(__file__), '..', 'schema.sql'), 'r') as f:
-                conn.executescript(f.read())
+    with sqlite3.connect(DATABASE) as conn:
+        with open(os.path.join(os.path.dirname(__file__), '..', 'schema.sql'), 'r') as f:
+            conn.executescript(f.read())
 
 def get_db():
     db = getattr(g, '_database', None)

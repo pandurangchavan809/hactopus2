@@ -1,3 +1,13 @@
+-- Chat history table for legal advisor AI
+CREATE TABLE IF NOT EXISTS chat_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT,
+    session_id TEXT,
+    sender TEXT NOT NULL,
+    message TEXT,
+    image_path TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
 -- Users table (optional, for extra info)
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
