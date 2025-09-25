@@ -1,3 +1,6 @@
 Flask
 Flask-Cors
 python-dotenv
+gunicorn
+requests
+email-validator
