@@ -1,203 +1,543 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Legal Framework - AI ODR Platform</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Roboto', sans-serif;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #ec4899;
+      --accent: #06b6d4;
+      --text-primary: #1f2937;
+      --text-secondary: #6b7280;
+      --bg-light: #f8fafc;
+      --bg-card: #ffffff;
+      --border: #e5e7eb;
+      --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+      --shadow-md: 0 4px 16px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --gradient-subtle: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     }
 
     body {
-      background: linear-gradient(135deg, #9b5de5, #f15bb5);
-      color: #333;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--gradient-subtle);
+      min-height: 100vh;
     }
 
-    header {
-      background-color: rgba(255,255,255,0.95);
-      padding: 20px 40px;
-      text-align: center;
+    /* Header */
+    .header {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
     }
 
-    header h1 {
-      color: #9b5de5;
-      margin-bottom: 5px;
-    }
-
-    header p {
-      color: #555;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: 40px auto;
-      padding: 20px;
-    }
-
-    h2.page-title {
-      color: white;
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
       text-align: center;
-      margin-bottom: 40px;
-      font-size: 2.2rem;
-      text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
     }
 
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    .page-title {
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 3rem;
+      position: relative;
+    }
+
+    .page-title::after {
+      content: '';
+      position: absolute;
+      bottom: -1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: var(--gradient);
+      border-radius: 2px;
+    }
+
+    /* Layout Grid */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    /* Cards */
     .card {
-      background: #fff;
-      border-radius: 15px;
-      padding: 30px;
-      margin-bottom: 30px;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-      transition: transform 0.3s, box-shadow 0.3s;
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
     }
 
     .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card:hover::before {
+      transform: scaleX(1);
     }
 
     .card h3 {
-      color: #f15bb5;
-      margin-bottom: 15px;
-      font-size: 1.4rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .card-icon {
+      font-size: 1.5rem;
+      padding: 0.5rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .card ul {
-      margin-left: 20px;
+      list-style: none;
     }
 
-    .card ul li {
-      margin-bottom: 10px;
-      font-size: 1rem;
-      line-height: 1.5;
+    .card li {
+      margin-bottom: 0.75rem;
+      padding-left: 2rem;
+      position: relative;
+      color: var(--text-secondary);
+      font-weight: 400;
     }
 
-    .emoji {
-      font-size: 1.2rem;
-      margin-right: 8px;
+    .card li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: 600;
     }
 
-    footer {
-      background-color: rgba(255,255,255,0.9);
+    .card li strong {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    /* Chat Section */
+    .chat-container {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+      height: fit-content;
+      position: sticky;
+      top: 120px;
+    }
+
+    .chat-header {
       text-align: center;
-      padding: 15px;
-      margin-top: 50px;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chat-header h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .chat-header p {
+      color: var(--text-secondary);
       font-size: 0.9rem;
-      color: #555;
+    }
+
+    .chat-messages {
+      height: 300px;
+      overflow-y: auto;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: var(--bg-light);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .chat-messages::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chat-messages::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    .chat-msg {
+      margin-bottom: 1rem;
+    }
+
+    .chat-msg-user {
+      text-align: right;
+    }
+
+    .chat-msg-ai {
+      text-align: left;
+    }
+
+    .chat-msg-box {
+      display: inline-block;
+      max-width: 80%;
+      padding: 0.75rem 1rem;
+      border-radius: 18px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .chat-msg-user .chat-msg-box {
+      background: var(--gradient);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .chat-msg-ai .chat-msg-box {
+      background: white;
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+    }
+
+    .chat-form {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 0.9rem;
+      resize: none;
+      outline: none;
+      transition: border-color 0.2s ease;
+      font-family: inherit;
+    }
+
+    .chat-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgb(99 102 241 / 0.1);
+    }
+
+    .chat-send-btn {
+      padding: 0.75rem 1.5rem;
+      background: var(--gradient);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .chat-send-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Footer */
+    .footer {
+      background: var(--bg-card);
+      text-align: center;
+      padding: 2rem;
+      margin-top: 4rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .chat-container {
+        position: static;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 2rem 1rem;
+      }
+
+      .header-content {
+        padding: 1rem;
+      }
+
+      .header h1 {
+        font-size: 1.5rem;
+      }
+
+      .page-title {
+        font-size: 2rem;
+      }
+
+      .card {
+        padding: 1.5rem;
+      }
+
+      .chat-container {
+        padding: 1.5rem;
+      }
+
+      .chat-messages {
+        height: 250px;
+      }
     }
   </style>
 </head>
-<body>
 
-  <header>
-    <h1>AI-assisted Online Dispute Resolution</h1>
-    <p>Legal Framework & Consumer Rights</p>
+<body>
+  <header class="header">
+    <div class="header-content">
+      <h1>AI-assisted Online Dispute Resolution</h1>
+      <p>Legal Framework & Consumer Rights</p>
+    </div>
   </header>
 
   <div class="container">
     <h2 class="page-title">⚖️ Know Your Rights & Laws</h2>
+    
+    <div class="content-grid">
+      <div class="cards-grid">
+        <div class="card">
+          <h3>
+            <span class="card-icon">🛡️</span>
+            Consumer Rights in India
+          </h3>
+          <ul>
+            <li><strong>Right to Safety:</strong> Protection from hazardous goods and services</li>
+            <li><strong>Right to be Informed:</strong> Accurate details about quality, price, and standards</li>
+            <li><strong>Right to Choose:</strong> Freedom to select goods/services fairly</li>
+            <li><strong>Right to be Heard:</strong> Voice concerns before authorities</li>
+            <li><strong>Right to Seek Redressal:</strong> Compensation for unfair practices or defects</li>
+            <li><strong>Right to Education:</strong> Awareness of rights and remedies</li>
+          </ul>
+        </div>
 
-    <div class="card">
-      <h3>📌 Consumer Rights in India</h3>
-      <ul>
-        <li><span class="emoji">🛡️</span><strong>Right to Safety:</strong> Protection from hazardous goods and services.</li>
-        <li><span class="emoji">ℹ️</span><strong>Right to be Informed:</strong> Accurate details about quality, price, and standards.</li>
-        <li><span class="emoji">🛍️</span><strong>Right to Choose:</strong> Freedom to select goods/services fairly.</li>
-        <li><span class="emoji">📢</span><strong>Right to be Heard:</strong> Voice concerns before authorities.</li>
-        <li><span class="emoji">⚖️</span><strong>Right to Seek Redressal:</strong> Compensation for unfair practices or defects.</li>
-        <li><span class="emoji">🎓</span><strong>Right to Education:</strong> Awareness of rights and remedies.</li>
-      </ul>
-    </div>
+        <div class="card">
+          <h3>
+            <span class="card-icon">📖</span>
+            Consumer Protection Act, 2019
+          </h3>
+          <ul>
+            <li><strong>Section 2(6):</strong> Defines "Complaint"</li>
+            <li><strong>Section 2(47):</strong> Defines "Unfair Trade Practices"</li>
+            <li><strong>Sections 17 & 34:</strong> Establishment of Consumer Commissions (District, State, National)</li>
+            <li><strong>Online Filing:</strong> Allows online filing of complaints → foundation of ODR</li>
+          </ul>
+        </div>
 
-    <div class="card">
-      <h3>📖 Consumer Protection Act, 2019</h3>
-      <ul>
-        <li>📌 Section 2(6): Defines “Complaint.”</li>
-        <li>📌 Section 2(47): Defines “Unfair Trade Practices.”</li>
-        <li>📌 Sections 17 & 34: Establishment of Consumer Commissions (District, State, National).</li>
-        <li>📌 Allows <strong>online filing of complaints</strong> → foundation of ODR.</li>
-      </ul>
-    </div>
+        <div class="card">
+          <h3>
+            <span class="card-icon">💻</span>
+            Information Technology Act, 2000
+          </h3>
+          <ul>
+            <li><strong>Section 43A:</strong> Compensation for failure to protect personal data</li>
+            <li><strong>Section 66C:</strong> Punishment for identity theft</li>
+            <li><strong>Section 72:</strong> Breach of confidentiality and privacy</li>
+            <li><strong>Digital Recognition:</strong> Recognizes electronic records & digital signatures</li>
+          </ul>
+        </div>
 
-    <div class="card">
-      <h3>💻 Information Technology Act, 2000</h3>
-      <ul>
-        <li>🔐 Section 43A: Compensation for failure to protect personal data.</li>
-        <li>👤 Section 66C: Punishment for identity theft.</li>
-        <li>🔏 Section 72: Breach of confidentiality and privacy.</li>
-        <li>✅ Recognizes electronic records & digital signatures.</li>
-      </ul>
-    </div>
+        <div class="card">
+          <h3>
+            <span class="card-icon">🤝</span>
+            Arbitration & Conciliation Act, 1996
+          </h3>
+          <ul>
+            <li><strong>Section 7:</strong> Defines arbitration agreements (including digital)</li>
+            <li><strong>Section 30:</strong> Encourages settlement via mediation/conciliation</li>
+            <li><strong>Enforcement:</strong> Arbitral awards are legally enforceable → strengthens ODR settlements</li>
+          </ul>
+        </div>
 
-    <div class="card">
-      <h3>🤝 Arbitration & Conciliation Act, 1996</h3>
-      <ul>
-        <li>📝 Section 7: Defines arbitration agreements (including digital).</li>
-        <li>🤝 Section 30: Encourages settlement via mediation/conciliation.</li>
-        <li>⚖️ Arbitral awards are legally enforceable → strengthens ODR settlements.</li>
-      </ul>
-    </div>
+        <div class="card">
+          <h3>
+            <span class="card-icon">🛒</span>
+            Consumer Protection (E-Commerce) Rules, 2020
+          </h3>
+          <ul>
+            <li><strong>Section 4:</strong> Duties of e-commerce entities to protect consumers</li>
+            <li><strong>Section 5:</strong> Mandatory online grievance redressal mechanisms</li>
+            <li><strong>Platform Requirements:</strong> Platforms like Amazon/Flipkart must provide ODR-based systems</li>
+          </ul>
+        </div>
 
-    <div class="card">
-      <h3>🛒 Consumer Protection (E-Commerce) Rules, 2020</h3>
-      <ul>
-        <li>📌 Section 4: Duties of e-commerce entities to protect consumers.</li>
-        <li>📌 Section 5: Mandatory online grievance redressal mechanisms.</li>
-        <li>📌 Platforms like Amazon/Flipkart must provide ODR-based systems.</li>
-      </ul>
-    </div>
+        <div class="card">
+          <h3>
+            <span class="card-icon">🌍</span>
+            Global Framework
+          </h3>
+          <ul>
+            <li><strong>UNCITRAL:</strong> Promotes cross-border online dispute resolution</li>
+            <li><strong>EU ODR Regulation (2016):</strong> European platform for e-commerce disputes</li>
+          </ul>
+        </div>
+      </div>
 
-    <div class="card">
-      <h3>🌍 Global Framework</h3>
-      <ul>
-        <li>🌐 UNCITRAL promotes cross-border online dispute resolution.</li>
-        <li>🇪🇺 EU ODR Regulation (2016): European platform for e-commerce disputes.</li>
-      </ul>
-    </div>
-
-    <div class="card" style="margin-bottom:40px;">
-      <h2 style="color:#9b5de5;">Legal Advisor AI (Gemini)</h2>
-      <img src="images/photo.webp" alt="Legal Advisor AI" style="width:80px; border-radius:50%; margin-bottom:15px;">
-      <p>Ask your legal rights question and get instant AI-powered advice.</p>
-      <button onclick="askLegalAdvisor()" style="background:#9b5de5; color:white; padding:12px 28px; border:none; border-radius:8px; font-size:1.1em; cursor:pointer;">Ask Legal Advisor AI</button>
-      <div id="legalAdvisorResponse" style="margin-top:20px; font-size:1.1em;"></div>
+      <div class="chat-container">
+        <div class="chat-header">
+          <h2>Legal Advisor AI</h2>
+          <p>Get instant legal guidance and advice</p>
+        </div>
+        
+        <div class="chat-messages" id="legalChatMessages">
+          <div class="chat-msg chat-msg-ai">
+            <div class="chat-msg-box">
+              Hello! I'm your AI Legal Advisor. Ask me any questions about consumer rights, legal frameworks, or dispute resolution processes.
+            </div>
+          </div>
+        </div>
+        
+        <form class="chat-form" id="legalChatForm">
+          <textarea class="chat-input" id="legalChatInput" rows="2" placeholder="Ask about consumer rights, legal procedures..."></textarea>
+          <button type="submit" class="chat-send-btn">Send</button>
+        </form>
+      </div>
     </div>
   </div>
 
-  <footer>
-    <p>&copy; 2025 AI ODR Platform | Legal Framework Page</p>
+  <footer class="footer">
+    <p>&copy; 2025 AI ODR Platform | Legal Framework & Consumer Rights</p>
   </footer>
 
   <script>
-function askLegalAdvisor() {
-    const question = prompt("Enter your legal rights question:");
-    if (!question) return;
-    fetch('http://localhost:5000/api/gemini/suggest', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ complaintType: question })
-    })
-    .then(res => res.json())
-    .then(data => {
-        document.getElementById('legalAdvisorResponse').innerHTML =
-            data.suggestions ? data.suggestions.map(s => `<div>${s}</div>`).join('') :
-            `<div>${data.error || "AI could not generate advice. Try again."}</div>`;
-    })
-    .catch(err => {
-        document.getElementById('legalAdvisorResponse').innerHTML =
-            "<div>Error contacting AI. Try again later.</div>";
-    });
-}
-</script>
-<script src="chatbot.js"></script>
+    const legalChatForm = document.getElementById('legalChatForm');
+    const legalChatInput = document.getElementById('legalChatInput');
+    const legalChatMessages = document.getElementById('legalChatMessages');
 
+    function addLegalMsg(text, sender) {
+      const cleanText = text.replace(/\*\*|--|__|\*|\n|\r/g, '').replace(/\s+/g, ' ').trim();
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `chat-msg chat-msg-${sender}`;
+      msgDiv.innerHTML = `<div class="chat-msg-box">${cleanText}</div>`;
+      legalChatMessages.appendChild(msgDiv);
+      legalChatMessages.scrollTop = legalChatMessages.scrollHeight;
+    }
+
+    legalChatForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const question = legalChatInput.value.trim();
+      if (!question) return;
+
+      addLegalMsg(question, 'user');
+      legalChatInput.value = '';
+
+      // Send user's message to Gemini API
+      fetch('http://localhost:5000/api/gemini/suggest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ complaintType: question })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          addLegalMsg(data.error, 'ai');
+        } else {
+          const response = data.suggestions ? data.suggestions.join('\n') : 'AI could not generate advice.';
+          addLegalMsg(response, 'ai');
+        }
+      })
+      .catch(() => {
+        addLegalMsg('Error contacting AI. Please try again later.', 'ai');
+      });
+    });
+
+    // Handle Enter key in textarea
+    legalChatInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        legalChatForm.dispatchEvent(new Event('submit'));
+      }
+    });
+  </script>
 </body>
+
 </html>

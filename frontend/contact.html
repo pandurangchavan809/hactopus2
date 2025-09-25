@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,12 +20,12 @@
     }
 
     header {
-      background-color: rgba(255,255,255,0.9);
+      background-color: rgba(255, 255, 255, 0.9);
       padding: 20px 40px;
       text-align: center;
       position: sticky;
       top: 0;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
     header h1 {
@@ -42,7 +43,7 @@
       background: #fff;
       padding: 40px;
       border-radius: 20px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     }
 
     .contact-container h2 {
@@ -101,7 +102,7 @@
     }
 
     footer {
-      background-color: rgba(255,255,255,0.9);
+      background-color: rgba(255, 255, 255, 0.9);
       text-align: center;
       padding: 15px;
       margin-top: 50px;
@@ -110,6 +111,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <header>
@@ -120,8 +122,8 @@
   <div class="contact-container">
     <h2>Get in Touch</h2>
     <div class="contact-info">
-      <p><strong>Email:</strong> support@aiodrplatform.com</p>
-      <p><strong>Phone:</strong> +91 98765 43210</p>
+      <p><strong>Email:</strong> pcyc323@gmail.com</p>
+      <p><strong>Phone:</strong> +91 9680104632</p>
       <p><strong>Address:</strong> Pune, Maharashtra, India</p>
       <p><strong>Website Creator:</strong> Hactopus</p>
     </div>
@@ -140,6 +142,32 @@
   <footer>
     <p>&copy; 2025 AI ODR Platform | All Rights Reserved</p>
   </footer>
+
+  <script>
+    document.querySelector('.contact-form form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const name = this.name.value;
+      const email = this.email.value;
+      const message = this.message.value;
+      fetch('http://localhost:5000/api/contact/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, message })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert('Your message was sent successfully!');
+            this.reset();
+          } else {
+            alert('Error: ' + (data.error || 'Could not send message.'));
+          }
+        })
+        .catch(() => {
+          alert('Error sending message. Please try again later.');
+        });
+    });
+  </script>
 
 </body>
 
