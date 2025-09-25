@@ -162,11 +162,42 @@
         <li>🇪🇺 EU ODR Regulation (2016): European platform for e-commerce disputes.</li>
       </ul>
     </div>
+
+    <div class="card" style="margin-bottom:40px;">
+      <h2 style="color:#9b5de5;">Legal Advisor AI (Gemini)</h2>
+      <img src="images/photo.webp" alt="Legal Advisor AI" style="width:80px; border-radius:50%; margin-bottom:15px;">
+      <p>Ask your legal rights question and get instant AI-powered advice.</p>
+      <button onclick="askLegalAdvisor()" style="background:#9b5de5; color:white; padding:12px 28px; border:none; border-radius:8px; font-size:1.1em; cursor:pointer;">Ask Legal Advisor AI</button>
+      <div id="legalAdvisorResponse" style="margin-top:20px; font-size:1.1em;"></div>
+    </div>
   </div>
 
   <footer>
     <p>&copy; 2025 AI ODR Platform | Legal Framework Page</p>
   </footer>
+
+  <script>
+function askLegalAdvisor() {
+    const question = prompt("Enter your legal rights question:");
+    if (!question) return;
+    fetch('http://localhost:5000/api/gemini/suggest', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ complaintType: question })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById('legalAdvisorResponse').innerHTML =
+            data.suggestions ? data.suggestions.map(s => `<div>${s}</div>`).join('') :
+            `<div>${data.error || "AI could not generate advice. Try again."}</div>`;
+    })
+    .catch(err => {
+        document.getElementById('legalAdvisorResponse').innerHTML =
+            "<div>Error contacting AI. Try again later.</div>";
+    });
+}
+</script>
+<script src="chatbot.js"></script>
 
 </body>
 </html>

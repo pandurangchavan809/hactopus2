@@ -518,6 +518,49 @@
             }
         }
     </style>
+    <script src="chatbot.js"></script>
+    <script>
+        // Add AI analysis to dispute view buttons
+        function showAIAnalysis(complaintId, description) {
+            const box = document.createElement('div');
+            box.style.position = 'fixed';
+            box.style.top = '50%';
+            box.style.left = '50%';
+            box.style.transform = 'translate(-50%, -50%)';
+            box.style.background = '#fff';
+            box.style.border = '2px solid #9b5de5';
+            box.style.borderRadius = '14px';
+            box.style.padding = '32px';
+            box.style.zIndex = '9999';
+            box.style.maxWidth = '500px';
+            box.innerHTML = `<h2 style='color:#9b5de5;'>AI Legal Analysis</h2><div id='aiAnalysisResult' style='margin:18px 0;font-size:1.1em;'>Analyzing...</div><button onclick='this.parentNode.remove()' style='background:#9b5de5;color:#fff;padding:8px 18px;border:none;border-radius:8px;cursor:pointer;'>Close</button>`;
+            document.body.appendChild(box);
+            fetch('http://localhost:5000/api/gemini/suggest', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ complaintType: description })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('aiAnalysisResult').innerHTML =
+                    data.suggestions ? data.suggestions.map(s => `<div>${s}</div>`).join('') :
+                    `<div>${data.error || "AI could not generate advice. Try again."}</div>`;
+            })
+            .catch(() => {
+                document.getElementById('aiAnalysisResult').innerHTML = "<div>Error contacting AI. Try again later.</div>";
+            });
+        }
+        // Attach to all dispute view buttons (example selector, adjust as needed)
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.view-dispute-btn').forEach(btn => {
+                btn.onclick = function() {
+                    const complaintId = btn.getAttribute('data-id');
+                    const description = btn.getAttribute('data-description');
+                    showAIAnalysis(complaintId, description);
+                };
+            });
+        });
+    </script>
 </head>
 <body>
     <!-- Header -->
@@ -832,7 +875,10 @@
         <section id="analytics" class="section">
             <h2 class="section-title"><i class="fas fa-robot"></i> AI Analytics</h2>
             <div class="section-content">
-                <p>AI Analytics content will appear here.</p>
+                <div id="aiAnalyticsBox" style="background:#f3e5f5; border-radius:8px; padding:1.5rem; min-height:120px;">
+                    <h3 style="margin-bottom:0.5rem;">AI Analysis Result</h3>
+                    <div id="aiAnalyticsResult" style="font-size:1.1rem; color:#333;"></div>
+                </div>
             </div>
         </section>
 
@@ -860,18 +906,11 @@
         // Tab Navigation
         document.querySelectorAll('.nav-tab').forEach(tab => {
             tab.addEventListener('click', function() {
-                // Remove active class from all tabs
                 document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-                
-                // Add active class to clicked tab
                 this.classList.add('active');
-                
-                // Hide all sections
                 document.querySelectorAll('.section').forEach(section => {
                     section.classList.remove('active');
                 });
-                
-                // Show the target section
                 const targetId = this.getAttribute('data-target');
                 document.getElementById(targetId).classList.add('active');
             });
@@ -881,37 +920,8 @@
         function openQuickActions() {
             alert('Quick Actions Menu\n\n• Create New Dispute\n• Add User\n• Generate Report\n• System Settings');
         }
-
-        // Simulate real-time updates
-        function updateStats() {
-            const statNumbers = document.querySelectorAll('.stat-number');
-            statNumbers.forEach(stat => {
-                const currentValue = parseFloat(stat.textContent.replace(/[^\d.]/g, ''));
-                if (Math.random() > 0.7) { // 30% chance to update
-                    const change = Math.random() > 0.5 ? 1 : -1;
-                    if (stat.textContent.includes('%')) {
-                        stat.textContent = (currentValue + change * 0.1).toFixed(1) + '%';
-                    } else if (stat.textContent.includes('.')) {
-                        stat.textContent = (currentValue + change * 0.1).toFixed(1);
-                    } else {
-                        stat.textContent = currentValue + change;
-                    }
-                }
-            });
-        }
-
-        // Update stats every 30 seconds
-        setInterval(updateStats, 30000);
-
-        // Add hover effects to cards
-        document.querySelectorAll('.stat-card').forEach(card => {
-            card.addEventListener('click', function() {
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = 'translateY(-5px)';
-                }, 150);
-            });
-        });
+    </script>
+    <script src="admin.js"></script>
     </script>
 </body>
 </html>

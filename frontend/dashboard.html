@@ -228,6 +228,7 @@
         }
     </style>
     <script type="module" src="dashboard.js"></script>
+    
 
 </head>
 
@@ -361,63 +362,100 @@
     </div>
 
     <script>
-        // sand: Array to hold last 2 complaints in the session
-        const recentComplaints = []; // sand
+
+        // Fetch and display last 2 real complaints for the logged-in user
+        let recentComplaints = [];
+        let firebase_uid = '';
+        let email = '';
+
+        // Get user info from Firebase (if available)
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.auth && window.auth.currentUser) {
+                firebase_uid = window.auth.currentUser.uid;
+                email = window.auth.currentUser.email;
+            } else {
+                // fallback to demo
+                firebase_uid = 'demo-user-uid';
+                email = 'demo@example.com';
+            }
+            fetchAndDisplayComplaints();
+        });
+
+        function fetchAndDisplayComplaints() {
+            fetch(`http://localhost:5000/api/complaints/my?firebase_uid=${firebase_uid}`)
+                .then(res => res.json())
+                .then(complaints => {
+                    recentComplaints = complaints.slice(0, 2);
+                    updateRecentComplaints();
+                })
+                .catch(err => {
+                    console.error('Error fetching complaints:', err);
+                });
+        }
 
         document.getElementById('complaintForm').addEventListener('submit', function (e) {
             e.preventDefault();
             const formData = new FormData(this);
             const complaintData = Object.fromEntries(formData);
-            complaintData.id = Math.floor(Math.random() * 100000);
+            complaintData.firebase_uid = firebase_uid;
+            complaintData.email = email;
 
-            recentComplaints.push(complaintData); // sand
-            if (recentComplaints.length > 2) recentComplaints.shift(); // sand
-            updateRecentComplaints(); // sand
-
-            alert('Complaint submitted successfully! Complaint ID: #' + complaintData.id);
-            this.reset();
-            document.getElementById('suggestionsContainer').classList.add('hidden');
+            fetch('http://localhost:5000/api/complaints/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    firebase_uid: complaintData.firebase_uid,
+                    email: complaintData.email,
+                    type: complaintData.complaintType,
+                    subject: complaintData.subject,
+                    description: complaintData.description
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message || 'Complaint submitted!');
+                fetchAndDisplayComplaints();
+                document.getElementById('complaintForm').reset();
+                document.getElementById('suggestionsContainer').classList.add('hidden');
+            })
+            .catch(err => {
+                alert('Error submitting complaint. Please try again.');
+                console.error(err);
+            });
         });
 
-        // sand: Function to update last 2 complaints display
-        function updateRecentComplaints() { // sand
-            const container = document.getElementById('recentComplaintsContainer'); // sand
+        function updateRecentComplaints() {
+            const container = document.getElementById('recentComplaintsContainer');
             container.innerHTML = recentComplaints.map(c => `
-        <div class="complaint-item">
-            <strong>${c.complaintType.replace('_', ' ')} - #${c.id}</strong>
-            <span class="status-badge status-pending">Pending</span>
-            <p>Subject: ${c.subject}</p>
-            <p>Description: ${c.description}</p>
-        </div>
-    `).join('');
+                <div class="complaint-item">
+                    <strong>${(c.type || c.complaintType || '').replace('_', ' ')} - #${c.id || ''}</strong>
+                    <span class="status-badge status-${(c.status || 'pending').toLowerCase()}">${c.status || 'Pending'}</span>
+                    <p>Subject: ${c.subject}</p>
+                    <p>Description: ${c.description}</p>
+                </div>
+            `).join('');
         }
 
-        // ✅ Gemini API Integration
-        async function getSuggestions() { // sand
+        // Gemini API Integration (via backend)
+        async function getSuggestions() {
             const complaintType = document.getElementById('complaintType').value;
             if (!complaintType) { alert('Please select a complaint type first'); return; }
 
             const suggestionsContainer = document.getElementById('suggestionsContainer');
             const suggestionsContent = document.getElementById('suggestionsContent');
 
-            // sand: Replace with your Gemini API key
-            const GEMINI_API_KEY = "AIzaSyDlelGykZKRYpfYDnOYChy1z8PBd8Sl_Mo"; // sand
-            const GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"; // ✅ correct
-
             try {
-                const prompt = `Provide 4 practical actions for the complaint type: ${complaintType}`;
-                const response = await fetch(`${GEMINI_ENDPOINT}?key=${GEMINI_API_KEY}`, {
+                const response = await fetch('http://localhost:5000/api/gemini/suggest', {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }] // ✅ Gemini format
-                    })
+                    body: JSON.stringify({ complaintType })
                 });
-
                 const data = await response.json();
-                const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "AI could not generate suggestions. Try again."; // ✅ safe parse
-                const aiSuggestions = aiText.split("\n").filter(s => s.trim() !== ""); // split into items
-                suggestionsContent.innerHTML = aiSuggestions.map(s => `<div class="suggestion-item">${s}</div>`).join('');
+                if (data.suggestions && data.suggestions.length > 0) {
+                    suggestionsContent.innerHTML = data.suggestions.map(s => `<div class="suggestion-item">${s}</div>`).join('');
+                } else {
+                    suggestionsContent.innerHTML = `<div class="suggestion-item">${data.error || "AI could not generate suggestions. Try again."}</div>`;
+                }
                 suggestionsContainer.classList.remove('hidden');
             } catch (err) {
                 console.error(err);
@@ -451,439 +489,3 @@
 </body>
 
 </html>
-
-
-
-
-
-
-
-
-
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complaint Dashboard</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            padding: 40px;
-        }
-
-        .dashboard {
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-
-        .header {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            margin-bottom: 35px;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .header h1 {
-            font-size: 3em;
-            margin-bottom: 15px;
-        }
-
-        .header p {
-            font-size: 1.5em;
-            color: #555;
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 35px;
-            margin-bottom: 35px;
-        }
-
-        .card {
-            background: white;
-            padding: 35px;
-            border-radius: 12px;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .card h2 {
-            margin-bottom: 25px;
-            color: #333;
-            border-bottom: 3px solid #007bff;
-            padding-bottom: 10px;
-            font-size: 2em;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: bold;
-            font-size: 1.3em;
-            color: #555;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 18px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1.2em;
-        }
-
-        .form-group textarea {
-            height: 200px;
-            resize: vertical;
-        }
-
-        .btn {
-            background: #007bff;
-            color: white;
-            padding: 18px 30px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.2em;
-            margin-right: 15px;
-            margin-bottom: 15px;
-        }
-
-        .btn:hover {
-            background: #0056b3;
-        }
-
-        .btn-success {
-            background: #28a745;
-        }
-
-        .btn-success:hover {
-            background: #1e7e34;
-        }
-
-        .btn-info {
-            background: #17a2b8;
-        }
-
-        .btn-info:hover {
-            background: #117a8b;
-        }
-
-        .suggestions {
-            background: #e9f7ff;
-            border: 1px solid #b8e6ff;
-            padding: 25px;
-            border-radius: 8px;
-            margin-top: 25px;
-        }
-
-        .suggestions h3 {
-            color: #0066cc;
-            margin-bottom: 15px;
-            font-size: 1.5em;
-        }
-
-        .suggestion-item {
-            background: white;
-            padding: 15px;
-            margin-bottom: 12px;
-            border-radius: 8px;
-            border-left: 5px solid #007bff;
-            font-size: 1.2em;
-        }
-
-        .rights-section {
-            grid-column: span 2;
-            background: white;
-            padding: 35px;
-            border-radius: 12px;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-            margin-top: 35px;
-        }
-
-        .rights-section h2 {
-            font-size: 2.2em;
-            margin-bottom: 15px;
-        }
-
-        .rights-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            margin-top: 25px;
-        }
-
-        .right-item {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 8px;
-            border-left: 6px solid #28a745;
-            cursor: pointer;
-            font-size: 1.2em;
-            transition: transform 0.2s;
-        }
-
-        .right-item:hover {
-            transform: scale(1.03);
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 14px;
-            font-size: 14px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-resolved {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .complaint-history {
-            margin-top: 30px;
-        }
-
-        .complaint-item {
-            background: #f8f9fa;
-            padding: 22px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            border-left: 5px solid #6c757d;
-            font-size: 1.2em;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        @media(max-width:1200px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-
-            .rights-section {
-                grid-column: span 1;
-            }
-        }
-    </style>
-    <script type="module" src="dashboard.js"></script>
-
-</head>
-
-<body>
-    <div class="dashboard">
-        <div class="header" style="display:flex; justify-content:space-between; align-items:center;
-              padding:20px; background:#f5f5f5;">
-
-        
-            <div>
-                <h1 style="margin:0;">Complaint Management Dashboard</h1>
-                <p style="margin:5px 0 0;">Submit complaints and explore your rights</p>
-            </div>
-
-            
-            <div style="display:flex; align-items:center; gap:15px;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <img id="userIcon"
-                        src="https://static.vecteezy.com/system/resources/previews/021/548/095/non_2x/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg"
-                        alt="User" style="width:32px; height:32px; border-radius:50%;">
-                    <span id="username" style="font-weight:bold; color:#333;">User</span>
-                </div>
-
-                <a href="landingpage.html" style="padding:10px 18px; background-color:red; color:white;
-                text-decoration:none; border-radius:8px; font-weight:bold;">
-                    Logout
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="main-content">
-        <div class="card">
-            <h2>Submit New Complaint</h2>
-            <form id="complaintForm">
-                <div class="form-group">
-                    <label for="complaintType">Complaint Type</label>
-                    <select id="complaintType" name="complaintType">
-                        <option value="">Select complaint type</option>
-                        <option value="product_defect">Product Defect</option>
-                        <option value="service_issue">Service Issue</option>
-                        <option value="billing_problem">Billing Problem</option>
-                        <option value="delivery_delay">Delivery Delay</option>
-                        <option value="customer_service">Customer Service</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="subject">Subject</label>
-                    <input type="text" id="subject" name="subject" placeholder="Brief description of the issue">
-                </div>
-
-                <div class="form-group">
-                    <label for="description">Detailed Description</label>
-                    <textarea id="description" name="description"
-                        placeholder="Please describe your issue in detail"></textarea>
-                </div>
-
-                <button type="submit" class="btn">Submit Complaint</button>
-                <button type="button" class="btn btn-info" onclick="getSuggestions()">Get AI Suggestions</button>
-            </form>
-
-            <div id="suggestionsContainer" class="suggestions hidden">
-                <h3>Suggested Actions</h3>
-                <div id="suggestionsContent"></div>
-            </div>
-        </div>
-
-        <div class="card">
-            <h2>Quick Actions</h2>
-            <a href="rights.html"
-                style="display:inline-block; padding:20px 20px; background-color:green; color:white; text-decoration:none; border-radius:10px;">
-                View My Rights
-            </a>
-
-            <button class="btn" onclick="trackComplaint()">Track Complaint</button>
-            <a href="contact.html"
-                style="display:inline-block; padding:10px 40px; background-color:#17a2b8; color:white; text-decoration:none; border-radius:4px; font-size:16px; font-weight:bold; text-align:center; width:200px; box-sizing:border-box;">
-                Contact Support
-            </a>
-
-            <div class="complaint-history">
-                <h3>Recent Complaints</h3>
-                <div class="complaint-item">
-                    <strong>Product Defect - #12345</strong>
-                    <span class="status-badge status-pending">Pending</span>
-                    <p>Submitted: 2024-01-15</p>
-                </div>
-                <div class="complaint-item">
-                    <strong>Service Issue - #12344</strong>
-                    <span class="status-badge status-resolved">Resolved</span>
-                    <p>Submitted: 2024-01-10</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="rights-section hidden" id="rightsSection">
-        <h2>Your Consumer Rights</h2>
-        <p>These are your fundamental rights as a consumer. Click on any right to learn more.</p>
-        <div class="rights-grid">
-           
-        </div>
-    </div>
-
-    <div id="rightDetailsModal" class="card hidden"
-        style="position: fixed; top:50%; left:50%; transform: translate(-50%, -50%); z-index:1000; width:90%; max-width:700px; background:white; border:2px solid #007bff;">
-        <h3 id="rightTitle"></h3>
-        <div id="rightContent"></div>
-        <button class="btn" onclick="closeRightDetails()">Close</button>
-    </div>
-    </div>
-
-    <script>
-
-        // sand: Replace this with your real Gemini API key
-        const GEMINI_API_KEY = "AIzaSyDlelGykZKRYpfYDnOYChy1z8PBd8Sl_Mo"; // sand
-
-        // sand: Replace this with the Gemini endpoint if different
-        const GEMINI_API_URL = "https://api.gemini.com/v1/generate"; // sand
-
-        const mockApiSuggestions = {
-            'product_defect': ['Check product warranty coverage', 'Document the defect with photos', 'Contact manufacturer directly', 'File complaint with consumer protection agency'],
-            'service_issue': ['Review service agreement terms', 'Document all communication attempts', 'Request service manager escalation', 'Consider alternative dispute resolution'],
-            'billing_problem': ['Review billing statements carefully', 'Contact billing department immediately', 'Request detailed breakdown of charges', 'Keep records of all communications'],
-            'delivery_delay': ['Check tracking information', 'Contact shipping carrier', 'Review delivery terms and conditions', 'Document any financial losses due to delay'],
-            'customer_service': ['Request to speak with supervisor', 'Document interaction details', 'Follow company escalation process', 'Consider formal complaint if unresolved']
-        };
-
-        const rightsInfo = {
-            /* rights data */
-        };
-
-        document.getElementById('complaintForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            const complaintData = Object.fromEntries(formData);
-
-            // sand: call Gemini API to get AI suggestions
-            fetch(GEMINI_API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${GEMINI_API_KEY}` // sand
-                },
-                body: JSON.stringify({
-                    prompt: `Suggest 4 clear actions a user can take for a "${complaintData.complaintType}" complaint.`,
-                    max_tokens: 1000
-                })
-            })
-                .then(res => res.json())
-                .then(data => {
-                    const suggestionsContainer = document.getElementById('suggestionsContainer');
-                    const suggestionsContent = document.getElementById('suggestionsContent');
-                    const aiSuggestions = data.choices && data.choices[0].text ? data.choices[0].text : ["AI could not generate suggestions. Try again."]; // sand
-                    suggestionsContent.innerHTML = aiSuggestions.map(s => `<div class="suggestion-item">${s}</div>`).join('');
-                    suggestionsContainer.classList.remove('hidden');
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert("Failed to get AI suggestions. Please try again.");
-                });
-
-            alert('Complaint submitted successfully! Complaint ID: #' + Math.floor(Math.random() * 100000));
-            this.reset();
-            document.getElementById('suggestionsContainer').classList.add('hidden');
-        });
-
-        function getSuggestions() {
-            const complaintType = document.getElementById('complaintType').value;
-            const suggestionsContainer = document.getElementById('suggestionsContainer');
-            const suggestionsContent = document.getElementById('suggestionsContent');
-            if (!complaintType) { alert('Please select a complaint type first'); return; }
-            setTimeout(() => {
-                const suggestions = mockApiSuggestions[complaintType] || ['Contact customer support for specific guidance'];
-                suggestionsContent.innerHTML = suggestions.map(s => `<div class="suggestion-item">${s}</div>`).join('');
-                suggestionsContainer.classList.remove('hidden');
-            }, 500);
-        }
-
-        function showRightDetails(key) {
-            const modal = document.getElementById('rightDetailsModal');
-            const title = document.getElementById('rightTitle');
-            const content = document.getElementById('rightContent');
-            const info = rightsInfo[key];
-            if (info) { title.textContent = info.title; content.innerHTML = info.content; modal.classList.remove('hidden'); }
-        }
-        function closeRightDetails() { document.getElementById('rightDetailsModal').classList.add('hidden'); }
-        function trackComplaint() { const id = prompt('Enter your complaint ID:'); if (id) { alert(`Tracking complaint ${id}:\nStatus: Under Review\nEstimated resolution: 3-5 business days\nNext update: Tomorrow at 2:00 PM`); } }
-        function contactSupport() { alert('Support Contact Information:\nPhone: 1-800-SUPPORT\nEmail: support@company.com\nLive Chat: Available 24/7\nOffice Hours: Mon-Fri 9AM-6PM'); }
-
-        document.addEventListener('click', function (e) { if (e.target === document.getElementById('rightDetailsModal')) closeRightDetails(); });
-    </script>
-</body>
-
-</html> -->
