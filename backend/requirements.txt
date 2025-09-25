@@ -5,7 +5,6 @@ gunicorn
 requests
 email-validator
 openai
-sqlite3
 Pillow
 python-multipart
 itsdangerous
