@@ -363,7 +363,7 @@
 
     <script>
 
-        // Fetch and display last 2 real complaints for the logged-in user
+        // Fetch and display last 2_real complaints for the logged-in users
         let recentComplaints = [];
         let firebase_uid = '';
         let email = '';
@@ -385,7 +385,7 @@
             fetch(`http://localhost:5000/api/complaints/my?firebase_uid=${firebase_uid}`)
                 .then(res => res.json())
                 .then(complaints => {
-                    recentComplaints = complaints.slice(0, 2);
+                    recentComplaints = complaints.slice(0, 5);  // last 5 complaints
                     updateRecentComplaints();
                 })
                 .catch(err => {
